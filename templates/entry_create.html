@@ -1,0 +1,35 @@
+<html>
+
+  <head>
+    <title>QuickFinder - Create new entry</title>
+    <link rel="stylesheet" type="text/css" href="/css/jquery.dataTables.css"></link>
+    <script type="text/javascript" charset="utf8" src="/js/jquery-3.2.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="/js/jquery.dataTables.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+
+    <script type="text/javascript">
+
+
+      $.validate({
+        lang: 'en'
+      });
+
+        $(document).ready(function() {
+
+
+        } );
+
+
+    </script>
+  </head>
+  <body>
+    <form action="/entry/create" method="POST">
+      <input id="acronym" name="acronym" data-validation="length alphanumeric" data-validation-length="min4">
+
+      <button type="submit" id="create_button">Create</button>
+      <button id="cancel_button">Cancel</button>
+    </form>
+
+
+  </body>
+</html>

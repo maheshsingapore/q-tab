@@ -1,0 +1,57 @@
+<html>
+
+  <head>
+    <title>Q-Tab : Multiple matches</title>
+    <link rel="stylesheet" type="text/css" href="/css/jquery.dataTables.css"></link>
+    <script type="text/javascript" charset="utf8" src="/js/jquery-3.2.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="/js/jquery.dataTables.js"></script>
+
+    <script type="text/javascript">
+        $.extend( true, $.fn.dataTable.defaults, {
+          paging: false,
+          searching: false,
+          lengthChange: false,
+          info: false,
+          destroy: true,
+          "ordering": false
+        } );
+
+        $(document).ready(function() {
+
+            var results = $('#data_table').DataTable();
+
+        } );
+
+    </script>
+
+  </head>
+  {% block body %}
+
+  <body>
+    <h3>Found multiple source matches for "<i>{{ term }}</i>"</h3>
+    <table id="data_table" class="stripe cell-border">
+      <thead>
+          <th class="dt-left">Sys ID</th>
+          <th class="dt-left">Sys Name</th>
+          <th class="dt-left">Pattern matched</th>
+          <th class="dt-left">Owner</th>
+      </thead>
+      {% for pe in pattern_entries %}
+        <tr>
+          <td>{{ pe.sys_id }}</td>
+          <td> <a href="{{ pe.get_redirect_url(term) }}">{{ pe.sys_name }}</a></td>
+          <td>{{ pe.pattern }}</td>
+          <td>{{ pe.owner }}</td>
+        </tr>
+      {% endfor %}
+      <tfoot>
+        <th class="dt-left">Sys ID</th>
+        <th class="dt-left">Sys Name</th>
+        <th class="dt-left">Pattern matched</th>
+        <th class="dt-left">Owner</th>
+      </tfoot>
+    </table>
+
+  </body>
+  {% endblock %}
+</html>

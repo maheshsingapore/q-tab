@@ -1,0 +1,141 @@
+<html>
+
+  <head>
+    <title>Q-Tab : Add new pattern</title>
+    <link rel="stylesheet" type="text/css" href="/css/jquery.dataTables.css"></link>
+    <script type="text/javascript" charset="utf8" src="/js/jquery-3.2.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="/js/jquery.dataTables.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+
+    <script type="text/javascript">
+        var search_string = $("#pattern").val();
+
+        $.extend( true, $.fn.dataTable.defaults, {
+          paging: false,
+          searching: false,
+          lengthChange: false,
+          info: false,
+          destroy: true,
+          "ordering": false
+        } );
+
+        $(document).ready(function() {
+
+            $( "#pattern" ).focus();
+            var results = $('#data_table').DataTable( {
+              "processing": true,
+              "serverSide": true,
+              "ajax": "/pattern/search=all" ,
+              "columns": [
+                    { "data": "sys_id" },
+                    { "data": "sys_name" },
+                    { "data": "pattern" },
+                    { "data": "redirect_url" },
+                    { "data": "owner" },
+                    { "data": "lastmodified" },
+                    { "render": function (data, type, row, meta) {
+                          return '<a href="/pattern/update_form/update=' + row.uid + '">' + row.uid + '</a>';
+                      } 
+                    }
+                ]
+            } );
+
+
+            $( "#create_button" ).click(function() {
+              results.ajax.url("/pattern/search=all");
+                $( "#create_form" ).submit(function( event ) {
+                  console.log( "Handler for .submit() called." );
+                });
+            });
+
+            $('#create_button').keypress(function (e) {
+             var key = e.which;
+             if(key == 13) {
+                $("#create_button").click();
+                return false;
+              }
+            });
+
+            $('#cancel_button').click(function() {
+                window.location.href = '/';
+                return false;
+            });
+
+            $('#pattern').on('change paste keyup', function(data) {
+              console.log("sds");
+                var input=$(this);
+                var provided_pattern=input.val();
+                $.get('/pattern/validate/pattern=' + provided_pattern, function (json){
+
+                    $("#parse_result").text(json.msg);
+                    console.log(json.msg)
+                    if (json.response_code === 0){
+                        $("#create_button").prop('disabled', true);
+                    }
+                    else {
+                        $("#create_button").prop('disabled', false);
+                    }
+
+                })
+            });
+
+            /*
+            $("#create_form").validate({
+               rules: {
+                 // no quoting necessary
+                 pattern: "required",
+               }
+             });
+             */
+
+        } );
+
+
+
+
+
+    </script>
+
+  </head>
+  <body>
+    <h3>Add a new pattern</h3>
+    <form name="create_form" id="create_form" action="/pattern/create" method="POST">
+    <table id="form_table">
+      <tr><td>Sys ID</td><td><input id="sys_id" name="sys_id" data-validation="length alphanumeric" data-validation-length="min4"></td></tr>
+      <tr><td>Sys Name</td><td><input id="sys_name" name="sys_name" data-validation="length alphanumeric" data-validation-length="min4"></td></tr>
+
+      <tr><td>Pattern</td><td><input id="pattern" name="pattern" minlength="2" data-validation="length alphanumeric" data-validation-length="min4"></td><td><label id="parse_result" name="parse_result"></label></td></tr>
+      <tr><td>Owner</td><td><input id="owner" name="owner" data-validation="length alphanumeric" data-validation-length="min4"></td></tr>
+      <tr><td>Redirect URL</td><td><input id="redirect_url" name="redirect_url" data-validation="length alphanumeric" data-validation-length="min4"></td/></tr>
+      <tr><td></td><td><input type="hidden" id="uid" name="uid" data-validation="length alphanumeric" data-validation-length="min4" ></td></tr>
+
+      <tr><td></td><td>
+      <button id="create_button" name="create_button">Create</button>
+      <button id="cancel_button" name="cancel_button">Cancel</button>
+      </tr>
+    </table>
+    </form>
+
+    <table id="data_table" class="stripe cell-border">
+      <thead>
+          <th class="dt-left">Sys ID</th>
+          <th class="dt-left">Sys Name</th>
+          <th class="dt-left">Pattern</th>
+          <th class="dt-left">Redirect URL</th>
+          <th class="dt-left">Owner</th>
+          <th class="dt-left">Last modified</th>
+          <th class="dt-left">UID</th>
+      </thead>
+      <tfoot>
+        <th class="dt-left">Sys ID</th>
+        <th class="dt-left">Sys Name</th>
+        <th class="dt-left">Pattern</th>
+        <th class="dt-left">Redirect URL</th>
+        <th class="dt-left">Owner</th>
+        <th class="dt-left">Last modified</th>
+        <th class="dt-left">UID</th>
+      </tfoot>
+    </table>
+
+  </body>
+</html>

@@ -1,0 +1,86 @@
+<html>
+
+  <head>
+    <title>QuickFinder</title>
+    <link rel="stylesheet" type="text/css" href="/css/jquery.dataTables.css"></link>
+    <script type="text/javascript" charset="utf8" src="/js/jquery-3.2.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="/js/jquery.dataTables.js"></script>
+    <script type="text/javascript">
+        var search_string = $("#search_box").val();
+
+        $.extend( true, $.fn.dataTable.defaults, {
+          paging: false,
+          searching: false,
+          lengthChange: false,
+          info: false,
+          destroy: true,
+          "ordering": false
+        } );
+
+        $(document).ready(function() {
+            $( "#search_box" ).focus();
+            var results = $('#data_table').DataTable( {
+              "processing": true,
+              "serverSide": true,
+              "ajax": "/entry/search=" + search_string,
+              "columnDefs": [
+                {
+                "render": function ( data, type, row, meta ) {
+                    return '<a href="' + data + '">Download</a>';
+                },
+                "targets": 0
+                },
+                { "visible": false,  "targets": [ 3 ] }
+              ],
+              "columns": [
+                    { "data": "acronym" },
+                    { "data": "desc" },
+                    { "data": "wiki" },
+                    { "data": "website" },
+                    { "data": "owner" },
+                    { "data": "lastmodified" }
+                ]
+            } );
+
+
+            $( "#search_button" ).click(function() {
+              results.ajax.url("/entry/search=" + $("#search_box").val()).load();
+            });
+
+            $('#search_box').keypress(function (e) {
+             var key = e.which;
+             if(key == 13) {
+                $("#search_button").click();
+                return false;
+              }
+            });
+
+        } );
+
+
+    </script>
+  </head>
+  <body>
+    <input type="search" id="search_box" name="search_box" width="100"/>
+    <button id="search_button">Search...</button>
+
+    <table id="data_table" class="stripe cell-border">
+      <thead>
+          <th class="dt-left">Acronym</th>
+          <th class="dt-left">Desc</th>
+          <th class="dt-left">Wiki</th>
+          <th class="dt-left">Website</th>
+          <th class="dt-left">Owner</th>
+          <th class="dt-left">Last modified</th>
+      </thead>
+      <tfoot>
+        <th class="dt-left">Acronym</th>
+        <th class="dt-left">Desc</th>
+        <th class="dt-left">Wiki</th>
+        <th class="dt-left">Website</th>
+        <th class="dt-left">Owner</th>
+        <th class="dt-left">Last modified</th>
+      </tfoot>
+    </table>
+  </body>
+</html>

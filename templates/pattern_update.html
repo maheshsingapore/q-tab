@@ -1,0 +1,73 @@
+<html>
+
+  <head>
+    <title>Q-Tab : modify pattern</title>
+    <link rel="stylesheet" type="text/css" href="/css/jquery.dataTables.css"></link>
+    <script type="text/javascript" charset="utf8" src="/js/jquery-3.2.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="/js/jquery.dataTables.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+
+    <script type="text/javascript">
+        var search_string = $("#pattern").val();
+
+        $(document).ready(function() {
+
+            $("#update_button").click(function() {
+                $( "#update_form" ).submit(function(e) {
+                  console.log( "Handler for .submit() called." );
+                });
+            });
+
+            $('#update_button').keypress(function (e) {
+             var key = e.which;
+             if(key == 13) {
+                $("#update_button").click();
+                return false;
+              }
+            });
+
+            $('#pattern').on('change paste keyup', function(data) {
+              console.log("sds");
+                var input=$(this);
+                var provided_pattern=input.val();
+                $.get('/pattern/validate/pattern=' + provided_pattern, function (json){
+
+                    $("#parse_result").text(json.msg);
+                    console.log(json.msg)
+                    if (json.response_code === 0){
+                        $("#update_button").prop('disabled', true);
+                    }
+                    else {
+                        $("#update_button").prop('disabled', false);
+                    }
+
+                })
+            });
+
+
+        } );
+</script>
+
+  </head>
+  <body>
+    <h3>Modify pattern {{ term }}</h3>
+    <form name="update_form" id="update_form" action="/pattern/update" method="POST">
+    <table id="form_table" name="form_table">
+
+      <tr><td>Sys ID</td><td><input id="sys_id" name="sys_id" data-validation="length alphanumeric" data-validation-length="min4" value="{{ pe.sys_id }}"></td></tr>
+      <tr><td>Sys Name</td><td><input id="sys_name" name="sys_name" data-validation="length alphanumeric" data-validation-length="min4" value="{{ pe.sys_name }}"></td></tr>
+
+      <tr><td>Pattern</td><td><input id="pattern" name="pattern" minlength="2" data-validation="length alphanumeric" data-validation-length="min4" value="{{ pe.pattern }}"></td><td><label id="parse_result" name="parse_result"></label></td></tr>
+      <tr><td>Owner</td><td><input id="owner" name="owner" data-validation="length alphanumeric" data-validation-length="min4"  value="{{ pe.owner }}"></td></tr>
+      <tr><td>Redirect URL</td><td><input id="redirect_url" name="redirect_url" data-validation="length alphanumeric" data-validation-length="min4" value="{{ pe.redirect_url }}"></td/></tr>
+      <tr><td></td><td><input type="hidden" id="uid" name="uid" data-validation="length alphanumeric" data-validation-length="min4" value="{{ pe.uid }}"></td></tr>
+
+      <tr><td></td><td>
+      <button id="update_button" name="update_button">Update</button>
+      <button id="cancel_button" name="cancel_button">Cancel</button>
+      </tr>
+    </table>
+    </form>
+
+  </body>
+</html>
